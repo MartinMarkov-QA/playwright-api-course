@@ -1,1 +1,1 @@
-# playwright-api-course - test
+# playwright-api-course
