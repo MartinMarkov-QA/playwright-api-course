@@ -2,7 +2,6 @@ import { test, expect } from "@playwright/test";
 
 test.use({ ignoreHTTPSErrors: true });
 
-test.describe("Tags and Articles API Tests", () => {
   test("Get Tags", async ({ request }) => {
     const responseTags = await request.get("https://conduit-api.bondaracademy.com/api/tags");
     const tagsJSON = await responseTags.json();
@@ -31,4 +30,3 @@ test.describe("Tags and Articles API Tests", () => {
     expect(articlesJSON.articles[0]).toHaveProperty("favoritesCount");
     expect(articlesJSON.articles[0]).toHaveProperty("author");
   });
-});
