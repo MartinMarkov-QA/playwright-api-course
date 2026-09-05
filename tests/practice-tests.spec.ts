@@ -30,3 +30,18 @@ test.use({ ignoreHTTPSErrors: true });
     expect(articlesJSON.articles[0]).toHaveProperty("favoritesCount");
     expect(articlesJSON.articles[0]).toHaveProperty("author");
   });
+
+  test("Create Article", async ({ request }) => {
+    const userLoginToken = await request.post("https://conduit-api.bondaracademy.com/api/users/login", {
+      data: {
+        user: {
+          email: "mar7inim@gmail.com",
+          password: "@mar7inim@"
+        }
+      }
+    });
+
+    const userLoginTokenJSON = await userLoginToken.json();
+    const userAuthToken = userLoginTokenJSON.user.token;
+    console.log (userAuthToken);  
+  });
