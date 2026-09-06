@@ -2,46 +2,71 @@ import { test, expect } from "@playwright/test";
 
 test.use({ ignoreHTTPSErrors: true });
 
-  test("Get Tags", async ({ request }) => {
-    const responseTags = await request.get("https://conduit-api.bondaracademy.com/api/tags");
-    const tagsJSON = await responseTags.json();
+test("Get Tags", async ({ request }) => {
+  const responseTags = await request.get("https://conduit-api.bondaracademy.com/api/tags");
+  const tagsJSON = await responseTags.json();
 
-    expect(responseTags.status()).toBe(200);
-    expect(tagsJSON).toHaveProperty("tags");
-    expect(tagsJSON.tags.length).toBeLessThanOrEqual(10);
-    expect(tagsJSON.tags[0]).toEqual("Test");
-  });
+  expect(responseTags.status()).toBe(200);
+  expect(tagsJSON).toHaveProperty("tags");
+  expect(tagsJSON.tags.length).toBeLessThanOrEqual(10);
+  expect(tagsJSON.tags[0]).toEqual("Test");
+});
 
-  test("Get Articles", async ({ request }) => {
-    const responseArticles = await request.get("https://conduit-api.bondaracademy.com/api/articles?limit=10&offset=0");
-    const articlesJSON = await responseArticles.json();
+test("Get Articles", async ({ request }) => {
+  const responseArticles = await request.get("https://conduit-api.bondaracademy.com/api/articles?limit=10&offset=0");
+  const articlesJSON = await responseArticles.json();
 
-    expect(responseArticles.status()).toBe(200);
-    expect(articlesJSON).toHaveProperty("articles");
-    expect(articlesJSON.articles.length).toBeLessThanOrEqual(10);
-    expect(articlesJSON.articles[0]).toHaveProperty("slug");
-    expect(articlesJSON.articles[0]).toHaveProperty("title");
-    expect(articlesJSON.articles[0]).toHaveProperty("description");
-    expect(articlesJSON.articles[0]).toHaveProperty("body");
-    expect(articlesJSON.articles[0]).toHaveProperty("tagList");
-    expect(articlesJSON.articles[0]).toHaveProperty("createdAt");
-    expect(articlesJSON.articles[0]).toHaveProperty("updatedAt");
-    expect(articlesJSON.articles[0]).toHaveProperty("favorited");
-    expect(articlesJSON.articles[0]).toHaveProperty("favoritesCount");
-    expect(articlesJSON.articles[0]).toHaveProperty("author");
-  });
+  expect(responseArticles.status()).toBe(200);
+  expect(articlesJSON).toHaveProperty("articles");
+  expect(articlesJSON.articles.length).toBeLessThanOrEqual(10);
+  expect(articlesJSON.articles[0]).toHaveProperty("slug");
+  expect(articlesJSON.articles[0]).toHaveProperty("title");
+  expect(articlesJSON.articles[0]).toHaveProperty("description");
+  expect(articlesJSON.articles[0]).toHaveProperty("body");
+  expect(articlesJSON.articles[0]).toHaveProperty("tagList");
+  expect(articlesJSON.articles[0]).toHaveProperty("createdAt");
+  expect(articlesJSON.articles[0]).toHaveProperty("updatedAt");
+  expect(articlesJSON.articles[0]).toHaveProperty("favorited");
+  expect(articlesJSON.articles[0]).toHaveProperty("favoritesCount");
+  expect(articlesJSON.articles[0]).toHaveProperty("author");
+});
 
-  test("Create Article", async ({ request }) => {
-    const userLoginToken = await request.post("https://conduit-api.bondaracademy.com/api/users/login", {
-      data: {
-        user: {
-          email: "mar7inim@gmail.com",
-          password: "@mar7inim@"
-        }
+test("Create Article", async ({ request }) => {
+  const userLoginTokenResponse = await request.post("https://conduit-api.bondaracademy.com/api/users/login", {
+    data: {
+      user: {
+        email: "mar7inim@gmail.com",
+        password: "@mar7inim@"
       }
-    });
-
-    const userLoginTokenJSON = await userLoginToken.json();
-    const userAuthToken = userLoginTokenJSON.user.token;
-    console.log (userAuthToken);  
+    }
   });
+
+  const userLoginTokenResJSON = await userLoginTokenResponse.json();
+  const userAuthToken = userLoginTokenResJSON.user.token;
+
+  const newArticleResponse = await request.post("https://conduit-api.bondaracademy.com/api/articles", {
+    data: {
+      article: { 
+        title: "Test API Article - one", 
+        description: "Article about section - one", 
+        body: "Article body section - one", 
+        tagList: ["JS", "API", "Test"] 
+      }
+    },
+    headers: {
+      Authorization: `Token ${userAuthToken}`
+    }
+  });
+
+  expect(newArticleResponse.status()).toBe(201);
+
+  const responseArticles = await request.get("https://conduit-api.bondaracademy.com/api/articles?limit=10&offset=0", {
+    headers: {
+      Authorization: `Token ${userAuthToken}`
+    }
+  });
+  const responseArticlesJSON = await responseArticles.json();
+
+  expect(responseArticles.status()).toBe(200);
+  expect(responseArticlesJSON.articles[0].title).toEqual("Test API Article - one");
+});
