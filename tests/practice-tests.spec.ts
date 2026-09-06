@@ -31,7 +31,7 @@ test("Get Articles", async ({ request }) => {
   expect(articlesJSON.articles[0]).toHaveProperty("author");
 });
 
-test("Create Article", async ({ request }) => {
+test("Create And Delete Article", async ({ request }) => {
   const userLoginTokenResponse = await request.post("https://conduit-api.bondaracademy.com/api/users/login", {
     data: {
       user: {
@@ -58,6 +58,9 @@ test("Create Article", async ({ request }) => {
     }
   });
 
+  const newArticleResponseJSON = await newArticleResponse.json();
+  const slugId = newArticleResponseJSON.article.slug;
+
   expect(newArticleResponse.status()).toBe(201);
 
   const responseArticles = await request.get("https://conduit-api.bondaracademy.com/api/articles?limit=10&offset=0", {
@@ -69,4 +72,13 @@ test("Create Article", async ({ request }) => {
 
   expect(responseArticles.status()).toBe(200);
   expect(responseArticlesJSON.articles[0].title).toEqual("Test API Article - one");
+
+  const deleteArticleResponse = await request.delete(`https://conduit-api.bondaracademy.com/api/articles/${slugId}`, {
+    headers: {
+      Authorization: `Token ${userAuthToken}`
+    }
+  });
+
+  expect(deleteArticleResponse.status()).toBe(204);
+
 });
