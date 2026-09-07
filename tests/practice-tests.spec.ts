@@ -82,3 +82,75 @@ test("Create And Delete Article", async ({ request }) => {
   expect(deleteArticleResponse.status()).toBe(204);
 
 });
+
+test("Create, Update And Delete Article", async ({ request }) => {
+  const userLoginTokenResponse = await request.post("https://conduit-api.bondaracademy.com/api/users/login", {
+    data: {
+      user: {
+        email: "mar7inim@gmail.com",
+        password: "@mar7inim@"
+      }
+    }
+  });
+
+  const userLoginTokenResJSON = await userLoginTokenResponse.json();
+  const userAuthToken = userLoginTokenResJSON.user.token;
+
+  const newArticleResponse = await request.post("https://conduit-api.bondaracademy.com/api/articles", {
+    data: {
+      article: { 
+        title: "Test API Article - one", 
+        description: "Article about section - one", 
+        body: "Article body section - one", 
+        tagList: ["JS", "API", "Test"] 
+      }
+    },
+    headers: {
+      Authorization: `Token ${userAuthToken}`
+    }
+  });
+
+  const newArticleResponseJSON = await newArticleResponse.json();
+  const newArticleSlugId = newArticleResponseJSON.article.slug;
+
+  expect(newArticleResponse.status()).toBe(201);
+
+  const updateArticleResponse = await request.put(`https://conduit-api.bondaracademy.com/api/articles/${newArticleSlugId}`, {
+    data: {
+      article: { 
+        title: "Test API Article - one UPDATED", 
+        description: "Article about section - one", 
+        body: "Article body section - one", 
+        tagList: ["JS", "API", "Test"] 
+      }
+    },
+    headers: {
+      Authorization: `Token ${userAuthToken}`
+    }
+  });
+  
+  const updateArticleResponseJSON = await updateArticleResponse.json();
+  const UpdatedArticleSlugId = updateArticleResponseJSON.article.slug;
+
+  expect(updateArticleResponse.status()).toBe(200);
+
+  const responseArticles = await request.get("https://conduit-api.bondaracademy.com/api/articles?limit=10&offset=0", {
+    headers: {
+      Authorization: `Token ${userAuthToken}`
+    }
+  });
+
+  const responseArticlesJSON = await responseArticles.json();
+
+  expect(responseArticles.status()).toBe(200);
+  expect(responseArticlesJSON.articles[0].title).toEqual("Test API Article - one UPDATED");
+
+  const deleteArticleResponse = await request.delete(`https://conduit-api.bondaracademy.com/api/articles/${UpdatedArticleSlugId}`, {
+    headers: {
+      Authorization: `Token ${userAuthToken}`
+    }
+  });
+
+  expect(deleteArticleResponse.status()).toBe(204);
+
+});
