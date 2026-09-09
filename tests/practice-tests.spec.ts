@@ -2,22 +2,21 @@ import { test, expect } from "@playwright/test";
 
 test.use({ ignoreHTTPSErrors: true });
 
-test.beforeAll(async () => {
-  console.log('This is executed before ALL tests');
-});
+let userAuthToken: string;
 
-test.afterAll(async () => {
-  console.log('This is executed after ALL tests');
-});
+test.beforeAll(async ({request}) => {
+  const userLoginTokenResponse = await request.post("https://conduit-api.bondaracademy.com/api/users/login", {
+    data: {
+      user: {
+        email: "mar7inim@gmail.com",
+        password: "@mar7inim@"
+      }
+    }
+  });
 
-test.beforeEach(async () => {
-  console.log('This is executed before EACH test');
+  const userLoginTokenResJSON = await userLoginTokenResponse.json();
+  userAuthToken = userLoginTokenResJSON.user.token;
 });
-
-test.afterEach(async () => {
-  console.log('This is executed after EACH test');
-});
-
 
 test("Get Tags", async ({ request }) => {
   const responseTags = await request.get("https://conduit-api.bondaracademy.com/api/tags");
@@ -49,18 +48,7 @@ test("Get Articles", async ({ request }) => {
 });
 
 test("Create And Delete Article", async ({ request }) => {
-  const userLoginTokenResponse = await request.post("https://conduit-api.bondaracademy.com/api/users/login", {
-    data: {
-      user: {
-        email: "mar7inim@gmail.com",
-        password: "@mar7inim@"
-      }
-    }
-  });
-
-  const userLoginTokenResJSON = await userLoginTokenResponse.json();
-  const userAuthToken = userLoginTokenResJSON.user.token;
-
+  
   const newArticleResponse = await request.post("https://conduit-api.bondaracademy.com/api/articles", {
     data: {
       article: { 
@@ -101,18 +89,7 @@ test("Create And Delete Article", async ({ request }) => {
 });
 
 test("Create, Update And Delete Article", async ({ request }) => {
-  const userLoginTokenResponse = await request.post("https://conduit-api.bondaracademy.com/api/users/login", {
-    data: {
-      user: {
-        email: "mar7inim@gmail.com",
-        password: "@mar7inim@"
-      }
-    }
-  });
-
-  const userLoginTokenResJSON = await userLoginTokenResponse.json();
-  const userAuthToken = userLoginTokenResJSON.user.token;
-
+  
   const newArticleResponse = await request.post("https://conduit-api.bondaracademy.com/api/articles", {
     data: {
       article: { 
