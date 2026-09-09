@@ -2,6 +2,23 @@ import { test, expect } from "@playwright/test";
 
 test.use({ ignoreHTTPSErrors: true });
 
+test.beforeAll(async () => {
+  console.log('This is executed before ALL tests');
+});
+
+test.afterAll(async () => {
+  console.log('This is executed after ALL tests');
+});
+
+test.beforeEach(async () => {
+  console.log('This is executed before EACH test');
+});
+
+test.afterEach(async () => {
+  console.log('This is executed after EACH test');
+});
+
+
 test("Get Tags", async ({ request }) => {
   const responseTags = await request.get("https://conduit-api.bondaracademy.com/api/tags");
   const tagsJSON = await responseTags.json();
