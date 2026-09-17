@@ -1,12 +1,15 @@
-// import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
 import { test } from '../utils/fixtures';
 
 test.use({ ignoreHTTPSErrors: true });
 
-test('Smoke Test', async ({ api }) => {   
+test('Smoke Test', async ({ api, request }) => {   
         api
             .url('https://conduit-api.bondaracademy.com')
-            .path('/api/tags');
+            .path('/api/articles')
+            .params({ limit: 10, offset: 0})
 
-        console.log(api);
+        const response = await request.get(api.getUrl());
+  
+        expect(response.status()).toBe(200);
 });

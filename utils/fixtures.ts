@@ -1,4 +1,4 @@
-import {test as base} from '@playwright/test';
+import { test as base } from '@playwright/test';
 import { RequestHandler } from './request-handler';
 
 export type TestOptions = {
@@ -6,8 +6,7 @@ export type TestOptions = {
 }
 
 export const test = base.extend<TestOptions>({
-
-    api: async ({}, use) => {
+    api: async ({ }, use) => {
         const requestHandler = new RequestHandler();
         await use(requestHandler);
     }
