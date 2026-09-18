@@ -9,7 +9,7 @@ test('Smoke Test', async ({ api, request }) => {
             .path('/api/articles')
             .params({ limit: 10, offset: 0})
 
-        const response = await request.get(api.getUrl());
-  
+        const response = await api.getRequest();
+        
         expect(response.status()).toBe(200);
 });
