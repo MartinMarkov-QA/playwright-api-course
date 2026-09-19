@@ -1,6 +1,5 @@
 import { test as base } from '@playwright/test';
 import { RequestHandler } from './request-handler';
-import { request } from 'node:http';
 
 export type TestOptions = {
     api: RequestHandler;
